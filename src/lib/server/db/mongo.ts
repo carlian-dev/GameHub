@@ -17,8 +17,10 @@ const dbName =
 		}
 	})();
 
-let client: MongoClient | null = null;
-let db: Db | null = null;
+// SvelteKit HMR-safe singleton — survives dev reloads
+const _g = globalThis as any;
+let client: MongoClient | null = _g.__gamehub_mongoClient ?? null;
+let db: Db | null = _g.__gamehub_mongoDb ?? null;
 
 export function getMongoUri(): string {
 	return uri;
@@ -38,17 +40,24 @@ export async function getClient(): Promise<MongoClient> {
 				await client.close().catch(() => {});
 				client = null;
 				db = null;
-			} else if (client.close && topo?.s?.state === 'closed') {
+				_g.__gamehub_mongoClient = null;
+				_g.__gamehub_mongoDb = null;
+			} else if (topo?.s?.state === 'closed') {
 				client = null;
 				db = null;
+				_g.__gamehub_mongoClient = null;
+				_g.__gamehub_mongoDb = null;
 			}
 		} catch {
 			client = null;
 			db = null;
+			_g.__gamehub_mongoClient = null;
+			_g.__gamehub_mongoDb = null;
 		}
 		if (client) return client;
 	}
 	client = new MongoClient(uri);
+	_g.__gamehub_mongoClient = client;
 	try {
 		await client.connect();
 	} catch (e) {
@@ -56,6 +65,8 @@ export async function getClient(): Promise<MongoClient> {
 		const failed = client;
 		client = null;
 		db = null;
+		_g.__gamehub_mongoClient = null;
+		_g.__gamehub_mongoDb = null;
 		try { await failed.close().catch(() => {}); } catch {}
 		throw e;
 	}
@@ -69,12 +80,14 @@ export async function getDb(): Promise<Db> {
 			const topo: any = (client as any)?.topology;
 			if (topo && typeof topo.isConnected === 'function' && !topo.isConnected()) {
 				db = null;
+				_g.__gamehub_mongoDb = null;
 			}
-		} catch { db = null; }
+		} catch { db = null; _g.__gamehub_mongoDb = null; }
 		if (db) return db;
 	}
 	const c = await getClient();
 	db = c.db(dbName);
+	_g.__gamehub_mongoDb = db;
 	return db;
 }
 
@@ -83,6 +96,8 @@ export async function closeMongo(): Promise<void> {
 		await client.close();
 		client = null;
 		db = null;
+		_g.__gamehub_mongoClient = null;
+		_g.__gamehub_mongoDb = null;
 	}
 }
 
