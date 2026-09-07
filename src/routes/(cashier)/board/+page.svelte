@@ -2,6 +2,8 @@
 	let { data } = $props();
 	// svelte-ignore state_referenced_locally
 	let tables = $state(data.tables);
+	// svelte-ignore state_referenced_locally
+	let products = $state(data.products);
 	let now = $state(Date.now());
 	let pollErr = $state('');
 
@@ -121,7 +123,6 @@
 	</div>
 	<div class="head-actions">
 		<span class="live"><span class="live-dot"></span> Live · polls 10s</span>
-		<a href="/admin/tables" class="link">Manage tables →</a>
 	</div>
 </div>
 
@@ -182,6 +183,31 @@
 		</article>
 	{/each}
 </div>
+
+<section class="panel products-panel">
+	<header class="panel-head">
+		<div>
+			<h2>Products</h2>
+			<p class="muted">Prices fixed by admin — read-only</p>
+		</div>
+		<span class="count-badge">{products.length} items</span>
+	</header>
+	<div class="table-wrap">
+		<table class="table">
+			<thead><tr><th>NAME</th><th>CATEGORY</th><th>PRICE</th><th>AVAILABLE</th></tr></thead>
+			<tbody>
+				{#each products as p}
+					<tr>
+						<td class="mono">{p.name}</td>
+						<td class="muted">{p.category}</td>
+						<td class="mono">₱{p.unitPrice}</td>
+						<td><span class="badge" data-available={p.isAvailable}>{p.isAvailable ? 'AVAILABLE' : 'HIDDEN'}</span></td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</section>
 
 <p class="foot"><small>Live board · <a href="/admin/dashboard">Dashboard</a></small></p>
 
@@ -253,15 +279,6 @@
 		50% { opacity: 0.6; }
 	}
 	@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
-	.link {
-		color: var(--text);
-		font-weight: 600;
-		text-decoration: none;
-		font-size: 0.88rem;
-		border-bottom: 1px solid var(--border-strong);
-		padding-bottom: 1px;
-	}
-	.link:hover { color: var(--accent); border-color: var(--accent); }
 	.alert {
 		padding: 10px 12px;
 		border-radius: var(--radius-sm);
@@ -459,6 +476,57 @@
 		border-color: var(--border);
 	}
 	.btn-ghost:hover { background: var(--surface-2); }
+	.panel {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 16px;
+		margin-top: 16px;
+	}
+	.panel-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		margin-bottom: 12px;
+	}
+	.panel-head h2 { margin: 0; font-size: 1.1rem; letter-spacing: -0.015em; font-weight: 700; }
+	.count-badge {
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		padding: 4px 8px;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+		background: var(--surface-2);
+		color: var(--text-muted);
+	}
+	.table-wrap { overflow-x: auto; }
+	.table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+	.table th {
+		text-align: left;
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		font-weight: 700;
+		padding: 8px 10px;
+		border-bottom: 1px solid var(--border);
+	}
+	.table td { padding: 10px; border-bottom: 1px solid var(--border); }
+	.mono { font-weight: 600; letter-spacing: -0.01em; }
+	.badge[data-available='true'] {
+		background: var(--success-soft);
+		border-color: rgba(29,129,39,0.18);
+		color: var(--success);
+	}
+	:global([data-theme='dark']) .badge[data-available='true'] { color: #30d158; }
+	.badge[data-available='false'] {
+		background: var(--surface-2);
+		border-color: var(--border);
+		color: var(--text-muted);
+	}
 	.foot {
 		margin-top: 16px;
 		color: var(--text-muted);

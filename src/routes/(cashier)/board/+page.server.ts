@@ -36,5 +36,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 		};
 	});
 
-	return { user: locals.user!, tables: result };
+	const productsRaw = await db
+		.collection('products')
+		.find({ isAvailable: true }, { projection: { name: 1, category: 1, unitPrice: 1, isAvailable: 1 } })
+		.sort({ category: 1, name: 1 })
+		.toArray();
+	const products = productsRaw.map((p) => ({
+		_id: p._id.toString(),
+		name: p.name,
+		category: p.category,
+		unitPrice: p.unitPrice,
+		isAvailable: p.isAvailable
+	}));
+
+	return { user: locals.user!, tables: result, products };
 };
