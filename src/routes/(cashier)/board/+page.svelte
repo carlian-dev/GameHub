@@ -115,13 +115,13 @@
 
 <div class="head">
 	<div>
-		<p class="kicker">Live Operations</p>
+		<p class="kicker">Live operations</p>
 		<h1>Board</h1>
 		<p class="sub">Welcome {data.user.displayName} — timers tick from <code>startedAt</code>, no per-second writes.</p>
 	</div>
 	<div class="head-actions">
-		<span class="live"><span class="live-dot"></span> Live • polls 10s</span>
-		<a href="/admin/tables" class="link">Manage Tables →</a>
+		<span class="live"><span class="live-dot"></span> Live · polls 10s</span>
+		<a href="/admin/tables" class="link">Manage tables →</a>
 	</div>
 </div>
 
@@ -139,7 +139,7 @@
 					{t.displayStatus}
 				</span>
 			</header>
-			<p class="tcard-desc">{t.description || 'Tournament • 9ft'}</p>
+			<p class="tcard-desc">{t.description || 'Tournament · 9ft'}</p>
 			{#if t.status !== t.displayStatus}<small class="muted">stored: {t.status}</small>{/if}
 
 			{#if t.currentSession}
@@ -166,24 +166,24 @@
 				<div class="actions">
 					<button class="btn btn-ghost" onclick={() => extendSession(t.currentSession!._id)}>Extend</button>
 					<button class="btn btn-primary" onclick={() => endSession(t.currentSession!._id)}>End</button>
-					<button class="btn btn-ghost" onclick={async () => { await fetch(`/api/tables/${t._id}/operational-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'AVAILABLE' }) }); await refresh(); }}>Mark AVAILABLE</button>
+					<button class="btn btn-ghost" onclick={async () => { await fetch(`/api/tables/${t._id}/operational-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'AVAILABLE' }) }); await refresh(); }}>Mark available</button>
 				</div>
 			{:else if t.displayStatus === 'AVAILABLE'}
 				<div class="actions">
-					<button class="btn btn-primary" onclick={() => startSession(t._id)}>Start Session</button>
-					<button class="btn btn-ghost" onclick={async () => { await fetch(`/api/tables/${t._id}/operational-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'OCCUPIED' }) }); await refresh(); }}>Mark OCCUPIED</button>
+					<button class="btn btn-primary" onclick={() => startSession(t._id)}>Start session</button>
+					<button class="btn btn-ghost" onclick={async () => { await fetch(`/api/tables/${t._id}/operational-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'OCCUPIED' }) }); await refresh(); }}>Mark occupied</button>
 				</div>
 			{:else if t.displayStatus === 'RESERVED'}
 				<div class="muted" style="margin-top:8px; font-size:0.9rem;">Reserved soon — check-ins first</div>
 			{:else}
 				<div class="muted" style="margin-top:8px; font-size:0.9rem;">{t.status}</div>
-				{#if t.status === 'OCCUPIED'}<button class="btn btn-ghost" style="margin-top:8px;" onclick={async () => { await fetch(`/api/tables/${t._id}/operational-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'AVAILABLE' }) }); await refresh(); }}>Mark AVAILABLE</button>{/if}
+				{#if t.status === 'OCCUPIED'}<button class="btn btn-ghost" style="margin-top:8px;" onclick={async () => { await fetch(`/api/tables/${t._id}/operational-status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'AVAILABLE' }) }); await refresh(); }}>Mark available</button>{/if}
 			{/if}
 		</article>
 	{/each}
 </div>
 
-<p class="foot"><small>BR-07 • <a href="/admin/dashboard">Dashboard</a></small></p>
+<p class="foot"><small>Live board · <a href="/admin/dashboard">Dashboard</a></small></p>
 
 <style>
 	.head {
@@ -196,32 +196,33 @@
 	}
 	.kicker {
 		margin: 0 0 6px;
-		font-size: 0.76rem;
-		letter-spacing: 0.14em;
+		font-size: 0.68rem;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--accent);
-		font-weight: 750;
-		font-family: ui-monospace, monospace;
+		color: var(--text-muted);
+		font-weight: 700;
 	}
 	h1 {
 		margin: 0;
 		font-size: clamp(1.6rem, 3vw, 2.2rem);
 		letter-spacing: -0.03em;
 		line-height: 0.95;
-		font-weight: 860;
+		font-weight: 700;
 	}
 	.sub {
 		margin: 6px 0 0;
 		color: var(--text-muted);
 		max-width: 60ch;
-		font-size: 0.95rem;
+		font-size: 0.92rem;
+		line-height: 1.6;
 	}
 	.sub code {
-		background: var(--accent-soft);
+		background: var(--surface-2);
 		padding: 1px 6px;
 		border-radius: 6px;
-		font-size: 0.85em;
+		font-size: 0.84em;
 		border: 1px solid var(--border);
+		font-family: ui-monospace, monospace;
 	}
 	.head-actions {
 		display: flex;
@@ -232,7 +233,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 0.82rem;
+		font-size: 0.78rem;
 		color: var(--text-muted);
 		border: 1px solid var(--border);
 		padding: 6px 10px;
@@ -243,85 +244,65 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 999px;
-		background: #2ad27a;
-		box-shadow: 0 0 0 4px rgba(42, 210, 122, 0.18);
+		background: var(--success);
+		box-shadow: 0 0 0 3px var(--success-soft);
 		animation: pulse 1.8s ease-in-out infinite;
 	}
 	@keyframes pulse {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.6;
-		}
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.6; }
 	}
-	@media (prefers-reduced-motion: reduce) {
-		.live-dot {
-			animation: none;
-		}
-	}
+	@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
 	.link {
 		color: var(--text);
-		font-weight: 650;
+		font-weight: 600;
 		text-decoration: none;
+		font-size: 0.88rem;
 		border-bottom: 1px solid var(--border-strong);
 		padding-bottom: 1px;
-		font-size: 0.9rem;
 	}
+	.link:hover { color: var(--accent); border-color: var(--accent); }
 	.alert {
 		padding: 10px 12px;
-		border-radius: 12px;
-		font-size: 0.9rem;
+		border-radius: var(--radius-sm);
+		font-size: 0.88rem;
 		margin: 12px 0;
 	}
 	.alert-error {
-		background: #2a1214;
-		border: 1px solid rgba(255, 70, 70, 0.22);
-		color: #ffb4b4;
-	}
-	:global([data-theme='light']) .alert-error {
-		background: #fef2f2;
-		color: #7f1d1d;
+		background: var(--danger-soft);
+		border: 1px solid rgba(215,0,21,0.18);
+		color: var(--danger);
 	}
 	.alert-ok {
-		background: #0f1a14;
-		border: 1px solid rgba(42, 210, 122, 0.28);
-		color: #b7f5d6;
+		background: var(--success-soft);
+		border: 1px solid rgba(29,129,39,0.18);
+		color: var(--success);
 	}
-	:global([data-theme='light']) .alert-ok {
-		background: #f0fdf4;
-		color: #14532d;
-	}
+	:global([data-theme='dark']) .alert-ok { color: #30d158; }
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-		gap: 16px;
+		gap: 14px;
 		margin-top: 16px;
 	}
 	.tcard {
 		position: relative;
 		background: var(--surface);
 		border: 1px solid var(--border);
-		border-radius: 18px;
-		padding: 14px;
+		border-radius: var(--radius-md);
+		padding: 16px;
 		overflow: clip;
-		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 		transition:
-			transform 180ms ease,
-			border-color 180ms ease;
+			transform 160ms ease,
+			border-color 160ms ease;
 	}
 	.tcard:hover {
-		transform: translateY(-2px);
+		transform: translateY(-1px);
 		border-color: var(--border-strong);
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.tcard {
-			transition: none;
-		}
-		.tcard:hover {
-			transform: none;
-		}
+		.tcard { transition: none; }
+		.tcard:hover { transform: none; }
 	}
 	.tcard-bar {
 		position: absolute;
@@ -330,18 +311,11 @@
 		top: 0;
 		height: 3px;
 	}
-	.tcard-bar[data-status='AVAILABLE'] {
-		background: #2ad27a;
-	}
-	.tcard-bar[data-status='OCCUPIED'] {
-		background: #ef4444;
-	}
-	.tcard-bar[data-status='RESERVED'] {
-		background: #f59e0b;
-	}
-	.tcard-bar[data-status='MAINTENANCE'] {
-		background: #6b7280;
-	}
+	.tcard-bar[data-status='AVAILABLE'] { background: var(--success); }
+	.tcard-bar[data-status='OCCUPIED'] { background: var(--danger); }
+	.tcard-bar[data-status='RESERVED'] { background: #ff9f0a; }
+	:global([data-theme='dark']) .tcard-bar[data-status='RESERVED'] { background: #ffd60a; }
+	.tcard-bar[data-status='MAINTENANCE'] { background: var(--text-faint); }
 	.tcard-head {
 		display: flex;
 		align-items: center;
@@ -350,12 +324,13 @@
 	}
 	.tcard-head h3 {
 		margin: 0;
-		font-size: 1.05rem;
+		font-size: 1rem;
 		letter-spacing: -0.015em;
+		font-weight: 650;
 	}
 	.badge {
-		font-size: 0.7rem;
-		font-weight: 800;
+		font-size: 0.68rem;
+		font-weight: 750;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		padding: 4px 8px;
@@ -364,40 +339,30 @@
 		white-space: nowrap;
 	}
 	.badge[data-status='AVAILABLE'] {
-		background: rgba(42, 210, 122, 0.14);
-		border-color: rgba(42, 210, 122, 0.28);
-		color: #0e5028;
+		background: var(--success-soft);
+		border-color: rgba(29,129,39,0.18);
+		color: var(--success);
 	}
-	:global([data-theme='dark']) .badge[data-status='AVAILABLE'] {
-		color: #b7f5d6;
-	}
+	:global([data-theme='dark']) .badge[data-status='AVAILABLE'] { color: #30d158; }
 	.badge[data-status='OCCUPIED'] {
-		background: rgba(239, 68, 68, 0.12);
-		border-color: rgba(239, 68, 68, 0.24);
-		color: #7f1d1d;
-	}
-	:global([data-theme='dark']) .badge[data-status='OCCUPIED'] {
-		color: #ffb4b4;
+		background: var(--danger-soft);
+		border-color: rgba(215,0,21,0.18);
+		color: var(--danger);
 	}
 	.badge[data-status='RESERVED'] {
-		background: rgba(245, 158, 11, 0.14);
-		border-color: rgba(245, 158, 11, 0.24);
-		color: #92400e;
+		background: rgba(255,159,10,0.12);
+		border-color: rgba(255,159,10,0.2);
+		color: #9a6700;
 	}
-	:global([data-theme='dark']) .badge[data-status='RESERVED'] {
-		color: #fde68a;
-	}
+	:global([data-theme='dark']) .badge[data-status='RESERVED'] { color: #ffd60a; border-color: rgba(255,214,10,0.2); }
 	.badge[data-status='MAINTENANCE'] {
-		background: rgba(107, 114, 128, 0.14);
-		border-color: rgba(107, 114, 128, 0.24);
-		color: #374151;
-	}
-	:global([data-theme='dark']) .badge[data-status='MAINTENANCE'] {
-		color: #d1d5db;
+		background: var(--surface-2);
+		border-color: var(--border);
+		color: var(--text-muted);
 	}
 	.tcard-desc {
 		margin: 4px 0 0;
-		font-size: 0.85rem;
+		font-size: 0.84rem;
 		color: var(--text-muted);
 	}
 	.muted {
@@ -415,11 +380,9 @@
 		display: flex;
 		justify-content: space-between;
 		gap: 12px;
-		font-size: 0.9rem;
+		font-size: 0.88rem;
 	}
-	.session-row span {
-		color: var(--text-muted);
-	}
+	.session-row span { color: var(--text-muted); }
 	.timer {
 		display: grid;
 		grid-template-columns: 1fr auto 1fr;
@@ -427,30 +390,24 @@
 		align-items: center;
 		background: var(--surface-2);
 		border: 1px solid var(--border);
-		border-radius: 12px;
+		border-radius: var(--radius-sm);
 		padding: 10px;
 	}
-	.timer-block {
-		display: grid;
-		gap: 2px;
-		text-align: center;
-	}
+	.timer-block { display: grid; gap: 2px; text-align: center; }
 	.timer-label {
-		font-size: 0.68rem;
+		font-size: 0.66rem;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
-		font-family: ui-monospace, monospace;
+		font-weight: 700;
 	}
 	.timer-value {
 		font-variant-numeric: tabular-nums;
-		font-weight: 800;
+		font-weight: 700;
 		letter-spacing: -0.02em;
-		font-size: 1.05rem;
+		font-size: 1rem;
 	}
-	.timer-value[data-overdue='true'] {
-		color: #ef4444;
-	}
+	.timer-value[data-overdue='true'] { color: var(--danger); }
 	.timer-divider {
 		width: 1px;
 		align-self: stretch;
@@ -460,17 +417,18 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 0.82rem;
+		font-size: 0.8rem;
 	}
 	.chip {
 		background: var(--surface-2);
 		border: 1px solid var(--border);
 		padding: 2px 8px;
 		border-radius: 999px;
-		font-size: 0.72rem;
+		font-size: 0.68rem;
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
+		color: var(--text-muted);
 	}
 	.actions {
 		display: flex;
@@ -484,34 +442,29 @@
 		border: 1px solid var(--border);
 		background: var(--surface);
 		color: var(--text);
-		font-weight: 650;
-		font-size: 0.85rem;
+		font-weight: 600;
+		font-size: 0.84rem;
 		cursor: pointer;
-		transition: transform 100ms ease-out;
+		transition: transform 100ms ease-out, background 160ms ease, border-color 160ms ease;
 	}
-	.btn:active {
-		transform: scale(0.97);
-	}
+	.btn:active { transform: scale(0.97); }
 	.btn-primary {
-		background: var(--accent);
-		color: white;
-		border-color: transparent;
+		background: var(--text);
+		color: var(--bg);
+		border-color: var(--text);
 	}
-	:global([data-theme='light']) .btn-primary {
-		color: white;
-	}
-	:global([data-theme='dark']) .btn-primary {
-		color: #05210f;
-		background: #2ad27a;
-	}
+	:global([data-theme='dark']) .btn-primary { background: #fff; color: #000; border-color: #fff; }
 	.btn-ghost {
 		background: transparent;
+		border-color: var(--border);
 	}
+	.btn-ghost:hover { background: var(--surface-2); }
 	.foot {
 		margin-top: 16px;
 		color: var(--text-muted);
+		font-size: 0.84rem;
 	}
-	.foot a {
-		color: var(--text);
-	}
+	.foot a { color: var(--text); text-underline-offset: 3px; }
+	.foot a:hover { color: var(--accent); }
+	@media (prefers-reduced-motion: reduce) { .btn { transition: opacity 160ms ease !important; } }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import AppNav from '$lib/components/AppNav.svelte';
 	let id = $state('');
 	let contact = $state('');
 	let reservation: any = $state(null);
@@ -51,24 +51,19 @@
 	<title>Reservation — GameHub</title>
 </svelte:head>
 
-<nav class="nav">
-	<div class="nav-inner">
-		<a href="/" class="brand"><span class="brand-mark"><span class="ball">8</span></span><span class="brand-text">GameHub</span></a>
-		<div class="nav-links">
-			<a href="/tables" class="nav-link">Tables</a>
-			<a href="/rates" class="nav-link">Rates</a>
-			<a href="/reserve" class="nav-link">Reserve</a>
-		</div>
-		<ThemeToggle />
-	</div>
-	<div class="nav-hairline"></div>
-</nav>
+<AppNav
+	links={[
+		{ label: 'Tables', href: '/tables' },
+		{ label: 'Rates', href: '/rates' },
+		{ label: 'Reserve', href: '/reserve' }
+	]}
+/>
 
 <header class="hero-mini">
 	<div class="hero-mini-inner">
 		<p class="kicker">Confirmation</p>
 		<h1>Reservation</h1>
-		<p class="sub">Bring your contact number to check in. Grace 15 min • Buffer 10 min.</p>
+		<p class="sub">Bring your contact number to check in. Grace 15 min · Buffer 10 min.</p>
 	</div>
 </header>
 
@@ -84,7 +79,7 @@
 		</label>
 		<button
 			type="submit"
-			class="btn btn-ghost"
+			class="btn btn-secondary"
 			data-active={activeBtn === 'view'}
 			onpointerdown={() => (activeBtn = 'view')}
 			onpointerup={() => (activeBtn = null)}
@@ -100,11 +95,8 @@
 	{#if reservation}
 		<article class="ticket">
 			<header class="ticket-head">
-				<div class="ticket-felt" aria-hidden="true"></div>
-				<div class="ticket-head-inner">
-					<span class="ticket-id">#{reservation._id.slice(-6)}</span>
-					<span class="badge" data-status={reservation.status}>{reservation.status}</span>
-				</div>
+				<span class="ticket-id">#{reservation._id.slice(-6)}</span>
+				<span class="badge" data-status={reservation.status}>{reservation.status}</span>
 			</header>
 
 			<div class="ticket-body">
@@ -118,7 +110,7 @@
 				</div>
 				<div class="ticket-row">
 					<span>Time</span>
-					<strong>{new Date(reservation.startTime).toLocaleString()} — {new Date(reservation.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {reservation.durationMinutes} min</strong>
+					<strong>{new Date(reservation.startTime).toLocaleString()} — {new Date(reservation.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} · {reservation.durationMinutes} min</strong>
 				</div>
 				<div class="ticket-divider"></div>
 				<div class="ticket-row">
@@ -145,7 +137,7 @@
 						onpointerup={() => (activeBtn = null)}
 						onpointerleave={() => (activeBtn = null)}
 					>
-						Cancel Reservation
+						Cancel reservation
 					</button>
 					<span class="foot-hint">Free cancellation before start time</span>
 				{:else}
@@ -156,131 +148,56 @@
 	{/if}
 </section>
 
-<p class="foot"><small><a href="/reserve">New Reservation</a> • <a href="/">Home</a></small></p>
+<p class="foot"><small><a href="/reserve">New reservation</a> · <a href="/">Home</a></small></p>
 
 <style>
 	:global(body) {
 		margin: 0;
 		background: var(--bg);
 		color: var(--text);
-		font: 100%/1.5 system-ui, sans-serif;
-	}
-	.nav {
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		background: rgba(18, 18, 18, 0.62);
-		backdrop-filter: blur(20px) saturate(160%);
-	}
-	.nav-inner {
-		width: min(1120px, calc(100% - 32px));
-		margin: 0 auto;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 12px 0;
-	}
-	@media (min-width: 880px) {
-		.nav-inner {
-			width: min(1120px, calc(100% - 48px));
-		}
-	}
-	.nav-hairline {
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
-	}
-	.brand {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		text-decoration: none;
-		color: inherit;
-	}
-	.brand-mark {
-		width: 32px;
-		height: 32px;
-		border-radius: 999px;
-		display: grid;
-		place-items: center;
-		background: radial-gradient(120% 120% at 30% 20%, #2a6b4a 0%, #0e3d2d 55%, #0a2a1f 100%);
-		border: 1px solid rgba(212, 175, 55, 0.35);
-	}
-	.ball {
-		width: 20px;
-		height: 20px;
-		border-radius: 999px;
-		display: grid;
-		place-items: center;
-		background: #0b0b0b;
-		color: #fff;
-		border: 1.5px solid #fff;
-		font-size: 11px;
-		font-weight: 800;
-	}
-	.brand-text {
-		font-weight: 750;
-		letter-spacing: -0.02em;
-	}
-	.nav-links {
-		display: flex;
-		gap: 4px;
-		margin-left: auto;
-	}
-	@media (max-width: 720px) {
-		.nav-links {
-			display: none;
-		}
-	}
-	.nav-link {
-		color: rgba(245, 241, 232, 0.82);
-		text-decoration: none;
-		padding: 8px 12px;
-		border-radius: 999px;
-		font-size: 0.9rem;
-	}
-	.nav-link:hover {
-		background: rgba(255, 255, 255, 0.08);
-		color: #fff;
+		font: 100%/1.5 system-ui, -apple-system, sans-serif;
+		-webkit-font-smoothing: antialiased;
 	}
 	.hero-mini {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 0 auto;
-		padding: 28px 0 8px;
+		padding: 32px 0 12px;
 	}
 	@media (min-width: 880px) {
-		.hero-mini {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.hero-mini { width: min(var(--content-width), calc(100% - 48px)); }
 	}
 	.kicker {
 		margin: 0 0 6px;
-		font-size: 0.78rem;
-		letter-spacing: 0.14em;
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: #2ad27a;
+		color: var(--text-muted);
 		font-weight: 700;
 	}
 	.hero-mini h1 {
 		margin: 0;
-		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		font-size: clamp(1.7rem, 3.4vw, 2.3rem);
 		letter-spacing: -0.03em;
+		line-height: 1;
+		font-weight: 700;
 	}
 	.sub {
-		color: rgba(245, 241, 232, 0.72);
+		margin: 8px 0 0;
+		color: var(--text-muted);
 		max-width: 60ch;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 	.panel {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 16px auto 0;
-		background: #141414;
-		border: 1px solid rgba(245, 241, 232, 0.08);
-		border-radius: 18px;
-		padding: 18px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 20px;
 	}
 	@media (min-width: 880px) {
-		.panel {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.panel { width: min(var(--content-width), calc(100% - 48px)); }
 	}
 	.lookup {
 		display: grid;
@@ -289,110 +206,102 @@
 		align-items: end;
 	}
 	@media (max-width: 720px) {
-		.lookup {
-			grid-template-columns: 1fr;
-		}
+		.lookup { grid-template-columns: 1fr; }
 	}
-	.field {
-		display: grid;
-		gap: 6px;
-	}
+	.field { display: grid; gap: 6px; }
 	.field span {
-		font-size: 0.82rem;
-		letter-spacing: 0.04em;
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(245, 241, 232, 0.72);
+		color: var(--text-muted);
+		font-weight: 700;
 	}
 	.field input {
-		background: #0f0f0f;
+		background: var(--surface);
 		color: var(--text);
-		border: 1px solid rgba(245, 241, 232, 0.14);
-		border-radius: 12px;
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-sm);
 		padding: 11px 12px;
-		font-size: 0.95rem;
+		font-size: 0.93rem;
+		outline: none;
+		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 	.field input:focus {
-		outline: 2px solid rgba(212, 175, 55, 0.5);
-		outline-offset: 2px;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px var(--accent-soft);
 	}
 	.btn {
 		display: inline-flex;
 		padding: 11px 16px;
 		border-radius: 999px;
-		font-weight: 700;
+		font-weight: 600;
+		font-size: 0.9rem;
 		border: 1px solid transparent;
 		cursor: pointer;
-		transition: transform 100ms ease-out;
+		transition: transform 100ms ease-out, background 160ms ease;
 		text-decoration: none;
+		letter-spacing: -0.01em;
 	}
 	.btn:active,
-	.btn[data-active='true'] {
-		transform: scale(0.97);
-	}
-	.btn-ghost {
-		background: rgba(245, 241, 232, 0.08);
+	.btn[data-active='true'] { transform: scale(0.97); }
+	.btn-secondary {
+		background: var(--surface);
 		color: var(--text);
-		border-color: rgba(245, 241, 232, 0.14);
+		border-color: var(--border-strong);
 	}
+	.btn-secondary:hover { background: var(--surface-2); }
 	.btn-danger {
-		background: #2a1214;
-		color: #ffb4b4;
-		border-color: rgba(255, 80, 80, 0.32);
-		padding: 10px 14px;
+		background: var(--danger);
+		color: #fff;
+		border-color: var(--danger);
+		padding: 10px 16px;
 		border-radius: 999px;
-		font-weight: 700;
+		font-weight: 600;
 		cursor: pointer;
+		font-size: 0.9rem;
 	}
+	.btn-danger:hover { opacity: 0.9; }
 	.alert {
 		margin-top: 12px;
 		padding: 10px 12px;
-		border-radius: 12px;
-		font-size: 0.9rem;
+		border-radius: var(--radius-sm);
+		font-size: 0.88rem;
 	}
 	.alert-error {
-		background: #2a1214;
-		border: 1px solid rgba(255, 80, 80, 0.25);
-		color: #ffb4b4;
+		background: var(--danger-soft);
+		border: 1px solid rgba(215,0,21,0.18);
+		color: var(--danger);
 	}
 	.alert-ok {
-		background: #0f1a14;
-		border: 1px solid rgba(42, 210, 122, 0.28);
-		color: #b7f5d6;
+		background: var(--success-soft);
+		border: 1px solid rgba(29,129,39,0.18);
+		color: var(--success);
 	}
+	:global([data-theme='dark']) .alert-ok { color: #30d158; }
 	.ticket {
 		margin-top: 16px;
-		border-radius: 16px;
+		border-radius: var(--radius-md);
 		overflow: clip;
-		border: 1px solid rgba(245, 241, 232, 0.08);
-		background: #0f0f0f;
+		border: 1px solid var(--border);
+		background: var(--surface-2);
 		max-width: 560px;
 	}
 	.ticket-head {
-		position: relative;
-		padding: 14px 16px;
-		background: #0e1a14;
-		border-bottom: 1px solid rgba(212, 175, 55, 0.18);
-		overflow: clip;
-	}
-	.ticket-felt {
-		position: absolute;
-		inset: 0;
-		background: radial-gradient(500px 260px at 30% 30%, #1b7a4b 0%, #0e3d2d 62%, #0a2a1f 100%);
-		opacity: 0.22;
-	}
-	.ticket-head-inner {
-		position: relative;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		padding: 14px 16px;
+		background: var(--surface);
+		border-bottom: 1px solid var(--border);
 	}
 	.ticket-id {
-		font-weight: 800;
-		letter-spacing: 0.04em;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		font-variant-numeric: tabular-nums;
 	}
 	.badge {
-		font-size: 0.72rem;
-		font-weight: 800;
+		font-size: 0.68rem;
+		font-weight: 750;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		padding: 4px 8px;
@@ -400,66 +309,59 @@
 		border: 1px solid;
 	}
 	.badge[data-status='CONFIRMED'] {
-		background: rgba(42, 210, 122, 0.14);
-		border-color: rgba(42, 210, 122, 0.28);
-		color: #b7f5d6;
+		background: var(--success-soft);
+		border-color: rgba(29,129,39,0.18);
+		color: var(--success);
 	}
+	:global([data-theme='dark']) .badge[data-status='CONFIRMED'] { color: #30d158; }
 	.badge[data-status='CANCELLED'] {
-		background: rgba(255, 80, 80, 0.14);
-		border-color: rgba(255, 80, 80, 0.28);
-		color: #ffb4b4;
+		background: var(--danger-soft);
+		border-color: rgba(215,0,21,0.18);
+		color: var(--danger);
 	}
 	.badge[data-status='CHECKED_IN'] {
-		background: rgba(212, 175, 55, 0.14);
-		border-color: rgba(212, 175, 55, 0.28);
-		color: var(--text);
+		background: var(--accent-soft);
+		border-color: var(--accent-soft-strong);
+		color: var(--accent);
 	}
 	.ticket-body {
 		padding: 14px 16px;
 		display: grid;
 		gap: 8px;
+		background: var(--surface);
 	}
 	.ticket-row {
 		display: flex;
 		justify-content: space-between;
 		gap: 12px;
-		font-size: 0.93rem;
+		font-size: 0.92rem;
 	}
-	.ticket-row span {
-		color: rgba(245, 241, 232, 0.62);
-	}
+	.ticket-row span { color: var(--text-muted); }
 	.ticket-divider {
 		height: 1px;
-		background: rgba(245, 241, 232, 0.08);
+		background: var(--border);
 		margin: 4px 0;
 	}
 	.ticket-foot {
-		padding: 12px 16px;
-		background: #141414;
-		border-top: 1px solid rgba(245, 241, 232, 0.06);
+		padding: 14px 16px;
+		background: var(--surface-2);
+		border-top: 1px solid var(--border);
 		display: flex;
 		align-items: center;
 		gap: 12px;
+		flex-wrap: wrap;
 	}
-	.foot-hint {
-		font-size: 0.85rem;
-		color: rgba(245, 241, 232, 0.62);
-	}
+	.foot-hint { font-size: 0.84rem; color: var(--text-muted); }
 	.foot {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 14px auto 24px;
-		color: rgba(245, 241, 232, 0.55);
+		color: var(--text-muted);
+		font-size: 0.84rem;
 	}
-	@media (min-width: 880px) {
-		.foot {
-			width: min(1120px, calc(100% - 48px));
-		}
-	}
+	@media (min-width: 880px) { .foot { width: min(var(--content-width), calc(100% - 48px)); } }
+	.foot a { color: var(--text); text-underline-offset: 3px; }
+	.foot a:hover { color: var(--accent); }
 	@media (prefers-reduced-motion: reduce) {
-		.btn {
-			transition: opacity 200ms ease !important;
-			transform: none !important;
-		}
+		.btn { transition: opacity 160ms ease !important; transform: none !important; }
 	}
 </style>
-

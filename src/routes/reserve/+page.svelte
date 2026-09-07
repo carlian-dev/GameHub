@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import AppNav from '$lib/components/AppNav.svelte';
 	let tables: any[] = $state([]);
 	let pricing: any = $state(null);
 	let tableId = $state('');
@@ -57,24 +57,19 @@
 	<title>Reserve — GameHub</title>
 </svelte:head>
 
-<nav class="nav">
-	<div class="nav-inner">
-		<a href="/" class="brand"><span class="brand-mark"><span class="ball">8</span></span><span class="brand-text">GameHub</span></a>
-		<div class="nav-links">
-			<a href="/tables" class="nav-link">Tables</a>
-			<a href="/rates" class="nav-link">Rates</a>
-			<a href="/reserve" class="nav-link" aria-current="page">Reserve</a>
-		</div>
-		<ThemeToggle />
-	</div>
-	<div class="nav-hairline"></div>
-</nav>
+<AppNav
+	links={[
+		{ label: 'Tables', href: '/tables' },
+		{ label: 'Rates', href: '/rates' },
+		{ label: 'Reserve', href: '/reserve', current: true }
+	]}
+/>
 
 <header class="hero-mini">
 	<div class="hero-mini-inner">
-		<p class="kicker">Guest Checkout • 30 Seconds</p>
-		<h1>Reserve a Table</h1>
-		<p class="sub">No account needed. Name + <code>09…</code> and you’re set — snapshot pricing locked at booking.</p>
+		<p class="kicker">Guest checkout · 30 seconds</p>
+		<h1>Reserve a table</h1>
+		<p class="sub">No account needed. Name + <code>09…</code> and you’re set — pricing locked at booking.</p>
 	</div>
 </header>
 
@@ -82,12 +77,12 @@
 	{#if pricing}
 		<div class="rate-pill">
 			<span class="pill-dot"></span>
-			<span>Current rate <strong>₱{pricing.ratePerHour}/hour</strong> • per-minute ceil</span>
+			<span>Current rate <strong>₱{pricing.ratePerHour}/hour</strong> · per-minute</span>
 		</div>
 	{/if}
 
 	{#if err}<div class="alert alert-error">{err}</div>{/if}
-	{#if ok}<div class="alert alert-ok">{ok} <button class="link-btn" onclick={viewCreated}>View Confirmation →</button></div>{/if}
+	{#if ok}<div class="alert alert-ok">{ok} <button class="link-btn" onclick={viewCreated}>View confirmation →</button></div>{/if}
 
 	<form onsubmit={submit} class="form">
 		<div class="form-grid">
@@ -108,7 +103,7 @@
 			</label>
 
 			<label class="field">
-				<span>Start Time</span>
+				<span>Start time</span>
 				<input type="time" bind:value={startTime} required />
 			</label>
 
@@ -150,241 +145,169 @@
 				onpointerup={() => (activeBtn = null)}
 				onpointerleave={() => (activeBtn = null)}
 			>
-				Confirm Reservation
+				Confirm reservation
 			</button>
-			<span class="foot-hint">Buffer 10 min • 7-day window • 09:00–02:00</span>
+			<span class="foot-hint">Buffer 10 min · 7-day window · 09:00–02:00</span>
 		</div>
 	</form>
 </section>
 
-<p class="foot"><small><a href="/">Home</a> • Need to change? Use your confirmation link to cancel before start time.</small></p>
+<p class="foot"><small><a href="/">Home</a> · Need to change? Use your confirmation link to cancel before start time.</small></p>
 
 <style>
 	:global(body) {
 		margin: 0;
 		background: var(--bg);
 		color: var(--text);
-		font: 100%/1.5 system-ui, sans-serif;
-	}
-	.nav {
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		background: rgba(18, 18, 18, 0.62);
-		backdrop-filter: blur(20px) saturate(160%);
-	}
-	.nav-inner {
-		width: min(1120px, calc(100% - 32px));
-		margin: 0 auto;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 12px 0;
-	}
-	@media (min-width: 880px) {
-		.nav-inner {
-			width: min(1120px, calc(100% - 48px));
-		}
-	}
-	.nav-hairline {
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
-	}
-	.brand {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		text-decoration: none;
-		color: inherit;
-	}
-	.brand-mark {
-		width: 32px;
-		height: 32px;
-		border-radius: 999px;
-		display: grid;
-		place-items: center;
-		background: radial-gradient(120% 120% at 30% 20%, #2a6b4a 0%, #0e3d2d 55%, #0a2a1f 100%);
-		border: 1px solid rgba(212, 175, 55, 0.35);
-	}
-	.ball {
-		width: 20px;
-		height: 20px;
-		border-radius: 999px;
-		display: grid;
-		place-items: center;
-		background: #0b0b0b;
-		color: #fff;
-		border: 1.5px solid #fff;
-		font-size: 11px;
-		font-weight: 800;
-	}
-	.brand-text {
-		font-weight: 750;
-		letter-spacing: -0.02em;
-	}
-	.nav-links {
-		display: flex;
-		gap: 4px;
-		margin-left: auto;
-	}
-	@media (max-width: 720px) {
-		.nav-links {
-			display: none;
-		}
-	}
-	.nav-link {
-		color: rgba(245, 241, 232, 0.82);
-		text-decoration: none;
-		padding: 8px 12px;
-		border-radius: 999px;
-		font-size: 0.9rem;
-	}
-	.nav-link[aria-current='page'] {
-		background: rgba(245, 241, 232, 0.1);
-		color: #fff;
+		font: 100%/1.5 system-ui, -apple-system, sans-serif;
+		-webkit-font-smoothing: antialiased;
 	}
 	.hero-mini {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 0 auto;
-		padding: 28px 0 8px;
+		padding: 32px 0 12px;
 	}
 	@media (min-width: 880px) {
-		.hero-mini {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.hero-mini { width: min(var(--content-width), calc(100% - 48px)); }
 	}
 	.kicker {
 		margin: 0 0 6px;
-		font-size: 0.78rem;
-		letter-spacing: 0.14em;
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: #2ad27a;
+		color: var(--text-muted);
 		font-weight: 700;
 	}
 	.hero-mini h1 {
 		margin: 0;
-		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		font-size: clamp(1.7rem, 3.4vw, 2.3rem);
 		letter-spacing: -0.03em;
+		line-height: 1;
+		font-weight: 700;
 	}
 	.sub {
-		color: rgba(245, 241, 232, 0.72);
+		margin: 8px 0 0;
+		color: var(--text-muted);
 		max-width: 60ch;
+		line-height: 1.6;
+		font-size: 0.95rem;
+	}
+	.sub code {
+		background: var(--surface-2);
+		border: 1px solid var(--border);
+		padding: 1px 5px;
+		border-radius: 6px;
+		font-size: 0.82em;
+		font-family: ui-monospace, monospace;
 	}
 	.panel {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 16px auto 0;
-		background: #141414;
-		border: 1px solid rgba(245, 241, 232, 0.08);
-		border-radius: 18px;
-		padding: 18px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 20px;
 	}
 	@media (min-width: 880px) {
-		.panel {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.panel { width: min(var(--content-width), calc(100% - 48px)); }
 	}
 	.rate-pill {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: #0e1a14;
-		border: 1px solid rgba(42, 210, 122, 0.22);
+		background: var(--surface-2);
+		border: 1px solid var(--border);
 		padding: 8px 12px;
 		border-radius: 999px;
-		font-size: 0.9rem;
-		margin-bottom: 14px;
+		font-size: 0.86rem;
+		margin-bottom: 16px;
+		color: var(--text-secondary);
 	}
 	.pill-dot {
 		width: 8px;
 		height: 8px;
 		border-radius: 999px;
-		background: #2ad27a;
-		box-shadow: 0 0 0 4px rgba(42, 210, 122, 0.18);
+		background: var(--success);
+		box-shadow: 0 0 0 3px var(--success-soft);
 	}
 	.alert {
 		padding: 10px 12px;
-		border-radius: 12px;
-		font-size: 0.9rem;
+		border-radius: var(--radius-sm);
+		font-size: 0.88rem;
 		margin-bottom: 12px;
 	}
 	.alert-error {
-		background: #2a1214;
-		border: 1px solid rgba(255, 80, 80, 0.25);
-		color: #ffb4b4;
+		background: var(--danger-soft);
+		border: 1px solid rgba(215,0,21,0.18);
+		color: var(--danger);
 	}
 	.alert-ok {
-		background: #0f1a14;
-		border: 1px solid rgba(42, 210, 122, 0.28);
-		color: #b7f5d6;
+		background: var(--success-soft);
+		border: 1px solid rgba(29,129,39,0.18);
+		color: var(--success);
 		display: flex;
 		align-items: center;
 		gap: 10px;
 		flex-wrap: wrap;
 	}
+	:global([data-theme='dark']) .alert-ok { color: #30d158; }
 	.link-btn {
-		background: #f5f1e8;
-		color: #0a0a0a;
+		background: var(--text);
+		color: var(--bg);
 		border: 0;
 		padding: 6px 10px;
 		border-radius: 999px;
-		font-weight: 700;
+		font-weight: 600;
 		cursor: pointer;
+		font-size: 0.84rem;
 	}
-	.form {
-		display: grid;
-		gap: 14px;
-	}
+	:global([data-theme='dark']) .link-btn { background: #fff; color: #000; }
+	.form { display: grid; gap: 16px; }
 	.form-grid {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 14px;
 	}
 	@media (max-width: 720px) {
-		.form-grid {
-			grid-template-columns: 1fr;
-		}
+		.form-grid { grid-template-columns: 1fr; }
 	}
-	.field {
-		display: grid;
-		gap: 6px;
-	}
+	.field { display: grid; gap: 6px; }
 	.field span {
-		font-size: 0.82rem;
-		letter-spacing: 0.04em;
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(245, 241, 232, 0.72);
+		color: var(--text-muted);
+		font-weight: 700;
 	}
 	.field em {
 		font-style: normal;
 		opacity: 0.6;
 		text-transform: none;
 		letter-spacing: 0;
+		font-weight: 400;
 	}
 	.field input,
 	.field select {
-		background: #0f0f0f;
+		background: var(--surface);
 		color: var(--text);
-		border: 1px solid rgba(245, 241, 232, 0.14);
-		border-radius: 12px;
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-sm);
 		padding: 11px 12px;
-		font-size: 0.95rem;
+		font-size: 0.93rem;
+		outline: none;
+		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 	.field input:focus,
 	.field select:focus {
-		outline: 2px solid rgba(212, 175, 55, 0.5);
-		outline-offset: 2px;
-		border-color: rgba(212, 175, 55, 0.35);
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px var(--accent-soft);
 	}
 	.field small {
-		font-size: 0.78rem;
-		color: rgba(245, 241, 232, 0.55);
+		font-size: 0.76rem;
+		color: var(--text-muted);
 	}
-	.field small a {
-		color: var(--text);
-	}
-	.field-full {
-		grid-column: 1 / -1;
-	}
+	.field small a { color: var(--text); text-underline-offset: 3px; }
+	.field-full { grid-column: 1 / -1; }
 	.form-foot {
 		display: flex;
 		align-items: center;
@@ -396,36 +319,34 @@
 		display: inline-flex;
 		padding: 12px 18px;
 		border-radius: 999px;
-		font-weight: 700;
+		font-weight: 600;
+		font-size: 0.92rem;
 		border: 1px solid transparent;
 		cursor: pointer;
-		transition: transform 100ms ease-out;
+		transition: transform 100ms ease-out, background 160ms ease;
 		text-decoration: none;
+		letter-spacing: -0.01em;
 	}
 	.btn:active,
-	.btn[data-active='true'] {
-		transform: scale(0.97);
-	}
+	.btn[data-active='true'] { transform: scale(0.97); }
 	.btn-primary {
-		background: #f5f1e8;
-		color: #0a0a0a;
-		border-color: rgba(212, 175, 55, 0.2);
+		background: var(--text);
+		color: var(--bg);
+		border-color: var(--text);
 	}
+	:global([data-theme='dark']) .btn-primary { background: #fff; color: #000; border-color: #fff; }
 	.foot {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 14px auto 24px;
-		color: rgba(245, 241, 232, 0.55);
+		color: var(--text-muted);
+		font-size: 0.84rem;
 	}
 	@media (min-width: 880px) {
-		.foot {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.foot { width: min(var(--content-width), calc(100% - 48px)); }
 	}
+	.foot a { color: var(--text); text-underline-offset: 3px; }
+	.foot-hint { font-size: 0.82rem; color: var(--text-muted); }
 	@media (prefers-reduced-motion: reduce) {
-		.btn {
-			transition: opacity 200ms ease !important;
-			transform: none !important;
-		}
+		.btn { transition: opacity 160ms ease !important; transform: none !important; }
 	}
 </style>
-

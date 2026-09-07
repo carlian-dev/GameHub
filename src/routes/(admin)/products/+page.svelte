@@ -50,33 +50,84 @@
 	}
 </script>
 
-<h1>Products</h1>
-<p>Drinks/snacks catalog. Snapshot price preserved in orders.</p>
+<div class="page-head">
+	<p class="kicker">Administration</p>
+	<h1>Products</h1>
+	<p class="sub">Drinks and snacks catalog. Snapshot price preserved in orders.</p>
+</div>
 
-{#if err}<div style="color:#b00020;background:#fdecea;padding:0.5rem;">{err}</div>{/if}
-{#if msg}<div style="color:#0a0;background:#e7f5e7;padding:0.5rem;">{msg}</div>{/if}
+{#if err}<div class="alert alert-error">{err}</div>{/if}
+{#if msg}<div class="alert alert-ok">{msg}</div>{/if}
 
-<form onsubmit={(e)=>{e.preventDefault(); create();}} style="display:flex;gap:0.5rem;margin:1rem 0;">
-	<input bind:value={name} placeholder="Name" required />
-	<select bind:value={category}><option>DRINK</option><option>SNACK</option><option>OTHER</option></select>
-	<input type="number" bind:value={unitPrice} min="1" style="width:80px;" />
-	<button type="submit">Create</button>
-</form>
+<div class="panel">
+	<form onsubmit={(e)=>{e.preventDefault(); create();}} class="form">
+		<input class="input" bind:value={name} placeholder="Name" required />
+		<select class="input" bind:value={category}><option>DRINK</option><option>SNACK</option><option>OTHER</option></select>
+		<input class="input" type="number" bind:value={unitPrice} min="1" />
+		<button type="submit" class="btn btn-primary">Create</button>
+	</form>
+</div>
 
-<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;">
-	<thead><tr><th>Name</th><th>Cat</th><th>Price</th><th>Avail</th><th>Actions</th></tr></thead>
-	<tbody>
-		{#each products as p}
-			<tr>
-				<td>{p.name}</td>
-				<td>{p.category}</td>
-				<td>₱{p.unitPrice}</td>
-				<td>{p.isAvailable ? '✅' : '❌'}</td>
-				<td>
-					<button onclick={()=>toggle(p._id, p.isAvailable)}>Toggle</button>
-					<button onclick={()=>del(p._id)} style="color:#b00020;">Delete</button>
-				</td>
-			</tr>
-		{/each}
-	</tbody>
-</table>
+<div class="panel">
+	<div class="table-wrap">
+		<table class="table">
+			<thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Available</th><th>Actions</th></tr></thead>
+			<tbody>
+				{#each products as p}
+					<tr>
+						<td class="mono">{p.name}</td>
+						<td class="muted">{p.category}</td>
+						<td class="mono">₱{p.unitPrice}</td>
+						<td><span class="badge" data-available={p.isAvailable}>{p.isAvailable ? 'Available' : 'Hidden'}</span></td>
+						<td class="actions">
+							<button class="btn btn-ghost btn-sm" onclick={()=>toggle(p._id, p.isAvailable)}>Toggle</button>
+							<button class="btn btn-danger btn-sm" onclick={()=>del(p._id)}>Delete</button>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<style>
+	.page-head { margin-bottom: 20px; }
+	.kicker { margin: 0 0 6px; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+	h1 { margin: 0; font-size: 1.7rem; letter-spacing: -0.03em; line-height: 1; font-weight: 700; }
+	.sub { margin: 8px 0 0; color: var(--text-muted); font-size: 0.92rem; }
+	.alert { padding: 10px 12px; border-radius: var(--radius-sm); font-size: 0.88rem; margin: 12px 0; }
+	.alert-error { background: var(--danger-soft); border: 1px solid rgba(215,0,21,0.18); color: var(--danger); }
+	.alert-ok { background: var(--success-soft); border: 1px solid rgba(29,129,39,0.18); color: var(--success); }
+	:global([data-theme='dark']) .alert-ok { color: #30d158; }
+	.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-top: 16px; }
+	.form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+	.input {
+		flex: 1 1 160px;
+		background: var(--surface);
+		color: var(--text);
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-sm);
+		padding: 10px 12px;
+		font-size: 0.92rem;
+		outline: none;
+		transition: border-color 160ms ease, box-shadow 160ms ease;
+	}
+	.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+	.table-wrap { overflow-x: auto; }
+	.table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+	.table th { text-align: left; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+	.table td { padding: 10px; border-bottom: 1px solid var(--border); }
+	.mono { font-weight: 600; letter-spacing: -0.01em; }
+	.muted { color: var(--text-muted); }
+	.badge { font-size: 0.68rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); }
+	.badge[data-available='true'] { background: var(--success-soft); color: var(--success); border-color: rgba(29,129,39,0.18); }
+	:global([data-theme='dark']) .badge[data-available='true'] { color: #30d158; }
+	.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+	.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: transform 100ms ease-out; }
+	.btn:active { transform: scale(0.97); }
+	.btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+	:global([data-theme='dark']) .btn-primary { background: #fff; color: #000; border-color: #fff; }
+	.btn-ghost:hover { background: var(--surface-2); }
+	.btn-danger { background: var(--danger-soft); color: var(--danger); border-color: rgba(215,0,21,0.18); }
+	.btn-sm { padding: 6px 10px; font-size: 0.78rem; }
+</style>

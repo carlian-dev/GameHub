@@ -1,4 +1,5 @@
 <script lang="ts">
+	import AppNav from '$lib/components/AppNav.svelte';
 	let { data, children } = $props();
 
 	async function logout() {
@@ -7,19 +8,31 @@
 	}
 </script>
 
-<header style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;border-bottom:1px solid #222;background:#111;color:#fff;">
-	<div>
-		<strong>GameHub — Admin</strong>
-		<span style="margin-left:1rem;opacity:0.8;">
-			{data.user.displayName} ({data.user.role})
-		</span>
-		<a href="/dashboard" style="margin-left:1rem;color:#9ad;">Dashboard</a>
-		<a href="/board" style="margin-left:0.75rem;color:#9ad;">Cashier Board</a>
-		<a href="/" style="margin-left:0.75rem;color:#9ad;">Landing</a>
-	</div>
-	<button onclick={logout} style="padding:0.4rem 0.8rem;">Logout</button>
-</header>
+<AppNav
+	variant="admin"
+	user={data.user}
+	links={[
+		{ label: 'Dashboard', href: '/dashboard' },
+		{ label: 'Tables', href: '/admin/tables' },
+		{ label: 'Pricing', href: '/admin/pricing' },
+		{ label: 'Cashiers', href: '/admin/cashiers' },
+		{ label: 'Products', href: '/admin/products' },
+		{ label: 'Logs', href: '/admin/logs' }
+	]}
+	onLogout={logout}
+/>
 
-<main style="padding:1rem;">
+<main class="main">
 	{@render children()}
 </main>
+
+<style>
+	.main {
+		width: min(var(--content-width), calc(100% - 32px));
+		margin: 0 auto;
+		padding: 24px 0 32px;
+	}
+	@media (min-width: 880px) {
+		.main { width: min(var(--content-width), calc(100% - 48px)); }
+	}
+</style>

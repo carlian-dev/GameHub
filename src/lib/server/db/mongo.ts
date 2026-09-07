@@ -29,14 +29,50 @@ export function getDbName(): string {
 }
 
 export async function getClient(): Promise<MongoClient> {
-	if (client) return client;
+	if (client) {
+		// If topology is closed (ECONNREFUSED / service down), drop it so next call retries
+		try {
+			// topology.isConnected is internal but reliable; fallback to ping check
+			const topo: any = (client as any).topology;
+			if (topo && typeof topo.isConnected === 'function' && !topo.isConnected()) {
+				await client.close().catch(() => {});
+				client = null;
+				db = null;
+			} else if (client.close && topo?.s?.state === 'closed') {
+				client = null;
+				db = null;
+			}
+		} catch {
+			client = null;
+			db = null;
+		}
+		if (client) return client;
+	}
 	client = new MongoClient(uri);
-	await client.connect();
+	try {
+		await client.connect();
+	} catch (e) {
+		// Do not cache a failed/closed client — allow retry on next request
+		const failed = client;
+		client = null;
+		db = null;
+		try { await failed.close().catch(() => {}); } catch {}
+		throw e;
+	}
 	return client;
 }
 
 export async function getDb(): Promise<Db> {
-	if (db) return db;
+	if (db) {
+		// Verify underlying client still usable
+		try {
+			const topo: any = (client as any)?.topology;
+			if (topo && typeof topo.isConnected === 'function' && !topo.isConnected()) {
+				db = null;
+			}
+		} catch { db = null; }
+		if (db) return db;
+	}
 	const c = await getClient();
 	db = c.db(dbName);
 	return db;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import AppNav from '$lib/components/AppNav.svelte';
 	let pricing: any = $state(null);
 	let err = $state('');
 
@@ -20,22 +20,17 @@
 	<title>Rates — GameHub</title>
 </svelte:head>
 
-<nav class="nav">
-	<div class="nav-inner">
-		<a href="/" class="brand"><span class="brand-mark"><span class="ball">8</span></span><span class="brand-text">GameHub</span></a>
-		<div class="nav-links">
-			<a href="/tables" class="nav-link">Tables</a>
-			<a href="/rates" class="nav-link" aria-current="page">Rates</a>
-			<a href="/reserve" class="nav-link">Reserve</a>
-		</div>
-		<ThemeToggle />
-	</div>
-	<div class="nav-hairline"></div>
-</nav>
+<AppNav
+	links={[
+		{ label: 'Tables', href: '/tables' },
+		{ label: 'Rates', href: '/rates', current: true },
+		{ label: 'Reserve', href: '/reserve' }
+	]}
+/>
 
 <section class="hero-mini">
 	<div class="hero-mini-inner">
-		<p class="kicker">Simple & Fair</p>
+		<p class="kicker">Simple &amp; fair</p>
 		<h1>Rates</h1>
 		<p class="sub">Flat hourly. Per-minute ceil. What you see is what you pay — snapshot preserved when you reserve.</p>
 	</div>
@@ -47,7 +42,7 @@
 		<div class="price-card">
 			<div class="price-main">
 				<div class="price-amount">₱{pricing.ratePerHour}<span>/hour</span></div>
-				<div class="price-meta">Effective {new Date(pricing.effectiveFrom).toLocaleDateString()} • Per-minute</div>
+				<div class="price-meta">Effective {new Date(pricing.effectiveFrom).toLocaleDateString()} · Per-minute</div>
 			</div>
 			<div class="price-divider"></div>
 			<ul class="price-points">
@@ -57,236 +52,165 @@
 			</ul>
 		</div>
 		<div class="price-actions">
-			<a href="/tables" class="btn btn-ghost">Check Tables</a>
-			<a href="/reserve" class="btn btn-primary">Reserve Now</a>
+			<a href="/tables" class="btn btn-ghost">Check tables</a>
+			<a href="/reserve" class="btn btn-primary">Reserve now</a>
 		</div>
 	{:else if !err}
-		<p>Loading…</p>
+		<p class="loading">Loading…</p>
 	{/if}
 </section>
 
-<p class="foot"><small><a href="/">Home</a> • 09:00–02:00 • No per-second DB writes</small></p>
+<p class="foot"><small><a href="/">Home</a> · 09:00–02:00 · No per-second DB writes</small></p>
 
 <style>
 	:global(body) {
 		margin: 0;
 		background: var(--bg);
 		color: var(--text);
-		font: 100%/1.5 system-ui, sans-serif;
-	}
-	.nav {
-		position: sticky;
-		top: 0;
-		z-index: 20;
-		background: rgba(18, 18, 18, 0.62);
-		backdrop-filter: blur(20px) saturate(160%);
-	}
-	.nav-inner {
-		width: min(1120px, calc(100% - 32px));
-		margin: 0 auto;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 12px 0;
-	}
-	@media (min-width: 880px) {
-		.nav-inner {
-			width: min(1120px, calc(100% - 48px));
-		}
-	}
-	.nav-hairline {
-		height: 1px;
-		background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.35), transparent);
-	}
-	.brand {
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		text-decoration: none;
-		color: inherit;
-	}
-	.brand-mark {
-		width: 32px;
-		height: 32px;
-		border-radius: 999px;
-		display: grid;
-		place-items: center;
-		background: radial-gradient(120% 120% at 30% 20%, #2a6b4a 0%, #0e3d2d 55%, #0a2a1f 100%);
-		border: 1px solid rgba(212, 175, 55, 0.35);
-	}
-	.ball {
-		width: 20px;
-		height: 20px;
-		border-radius: 999px;
-		display: grid;
-		place-items: center;
-		background: #0b0b0b;
-		color: #fff;
-		border: 1.5px solid #fff;
-		font-size: 11px;
-		font-weight: 800;
-	}
-	.brand-text {
-		font-weight: 750;
-		letter-spacing: -0.02em;
-	}
-	.nav-links {
-		display: flex;
-		gap: 4px;
-		margin-left: auto;
-	}
-	@media (max-width: 720px) {
-		.nav-links {
-			display: none;
-		}
-	}
-	.nav-link {
-		color: rgba(245, 241, 232, 0.82);
-		text-decoration: none;
-		padding: 8px 12px;
-		border-radius: 999px;
-		font-size: 0.9rem;
-	}
-	.nav-link[aria-current='page'] {
-		background: rgba(245, 241, 232, 0.1);
-		color: #fff;
+		font: 100%/1.5 system-ui, -apple-system, sans-serif;
+		-webkit-font-smoothing: antialiased;
 	}
 	.hero-mini {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 0 auto;
-		padding: 28px 0 8px;
+		padding: 32px 0 12px;
 	}
 	@media (min-width: 880px) {
-		.hero-mini {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.hero-mini { width: min(var(--content-width), calc(100% - 48px)); }
 	}
 	.kicker {
 		margin: 0 0 6px;
-		font-size: 0.78rem;
-		letter-spacing: 0.14em;
+		font-size: 0.72rem;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: #2ad27a;
+		color: var(--text-muted);
 		font-weight: 700;
 	}
 	.hero-mini h1 {
 		margin: 0;
-		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		font-size: clamp(1.7rem, 3.4vw, 2.3rem);
 		letter-spacing: -0.03em;
+		line-height: 1;
+		font-weight: 700;
 	}
 	.sub {
-		color: rgba(245, 241, 232, 0.72);
+		margin: 8px 0 0;
+		color: var(--text-muted);
 		max-width: 60ch;
+		line-height: 1.6;
+		font-size: 0.95rem;
 	}
 	.panel {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 16px auto 0;
-		background: #141414;
-		border: 1px solid rgba(245, 241, 232, 0.08);
-		border-radius: 18px;
-		padding: 18px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		padding: 20px;
 	}
 	@media (min-width: 880px) {
-		.panel {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.panel { width: min(var(--content-width), calc(100% - 48px)); }
 	}
 	.alert-error {
-		background: #2a1214;
-		border: 1px solid rgba(255, 80, 80, 0.25);
-		color: #ffb4b4;
+		background: var(--danger-soft);
+		border: 1px solid rgba(215,0,21,0.18);
+		color: var(--danger);
 		padding: 10px 12px;
-		border-radius: 12px;
+		border-radius: var(--radius-sm);
+		font-size: 0.88rem;
 	}
+	.loading { color: var(--text-muted); font-size: 0.92rem; }
 	.price-card {
 		display: grid;
 		grid-template-columns: 1fr auto 1.2fr;
-		gap: 18px;
+		gap: 20px;
 		align-items: center;
-		background: #0f0f0f;
-		border: 1px solid rgba(212, 175, 55, 0.18);
-		border-radius: 16px;
-		padding: 18px;
+		background: var(--surface-2);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 20px;
 	}
 	@media (max-width: 720px) {
-		.price-card {
-			grid-template-columns: 1fr;
-		}
-		.price-divider {
-			display: none;
-		}
+		.price-card { grid-template-columns: 1fr; }
+		.price-divider { display: none; }
 	}
 	.price-amount {
-		font-size: clamp(2rem, 5vw, 2.8rem);
-		font-weight: 850;
+		font-size: clamp(2rem, 5vw, 2.6rem);
+		font-weight: 700;
 		letter-spacing: -0.03em;
 		line-height: 1;
 	}
 	.price-amount span {
-		font-size: 1rem;
+		font-size: 0.95rem;
 		font-weight: 600;
-		opacity: 0.72;
-		letter-spacing: 0.02em;
+		opacity: 0.6;
+		letter-spacing: -0.01em;
+		margin-left: 4px;
 	}
 	.price-meta {
-		font-size: 0.85rem;
-		color: rgba(245, 241, 232, 0.62);
-		margin-top: 4px;
+		font-size: 0.82rem;
+		color: var(--text-muted);
+		margin-top: 6px;
 	}
 	.price-divider {
 		width: 1px;
 		align-self: stretch;
-		background: rgba(245, 241, 232, 0.1);
+		background: var(--border);
 	}
 	.price-points {
 		margin: 0;
 		padding-left: 18px;
-		color: rgba(245, 241, 232, 0.82);
+		color: var(--text-secondary);
 		line-height: 1.6;
-		font-size: 0.93rem;
+		font-size: 0.9rem;
 	}
 	.price-points code {
-		background: rgba(245, 241, 232, 0.08);
+		background: var(--surface);
+		border: 1px solid var(--border);
 		padding: 1px 6px;
 		border-radius: 6px;
-		font-size: 0.82rem;
+		font-size: 0.78rem;
+		font-family: ui-monospace, monospace;
 	}
 	.price-actions {
 		display: flex;
 		gap: 10px;
-		margin-top: 14px;
+		margin-top: 16px;
 		justify-content: flex-end;
+		flex-wrap: wrap;
 	}
 	.btn {
 		display: inline-flex;
-		padding: 11px 16px;
+		padding: 10px 16px;
 		border-radius: 999px;
-		font-weight: 700;
+		font-weight: 600;
+		font-size: 0.9rem;
 		text-decoration: none;
 		border: 1px solid transparent;
-		transition: transform 100ms ease-out;
+		transition: transform 100ms ease-out, background 160ms ease;
+		letter-spacing: -0.01em;
 	}
-	.btn:active {
-		transform: scale(0.97);
-	}
+	.btn:active { transform: scale(0.97); }
 	.btn-primary {
-		background: #f5f1e8;
-		color: #0a0a0a;
+		background: var(--text);
+		color: var(--bg);
+		border-color: var(--text);
 	}
+	:global([data-theme='dark']) .btn-primary { background: #fff; color: #000; border-color: #fff; }
 	.btn-ghost {
-		background: rgba(245, 241, 232, 0.08);
+		background: var(--surface);
 		color: var(--text);
-		border-color: rgba(245, 241, 232, 0.14);
+		border-color: var(--border-strong);
 	}
+	.btn-ghost:hover { background: var(--surface-2); }
 	.foot {
-		width: min(1120px, calc(100% - 32px));
+		width: min(var(--content-width), calc(100% - 32px));
 		margin: 16px auto 24px;
-		color: rgba(245, 241, 232, 0.62);
+		color: var(--text-muted);
+		font-size: 0.84rem;
 	}
 	@media (min-width: 880px) {
-		.foot {
-			width: min(1120px, calc(100% - 48px));
-		}
+		.foot { width: min(var(--content-width), calc(100% - 48px)); }
 	}
+	.foot a { color: var(--text); text-underline-offset: 3px; }
 </style>
-

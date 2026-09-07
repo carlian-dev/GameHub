@@ -56,33 +56,122 @@
 	}
 </script>
 
-<h1>Tables — Maintenance (ADMIN)</h1>
-<p>ADMIN: create tables + set <code>UNDER_MAINTENANCE</code> (<code>MAINTENANCE</code>/<code>OUT_OF_SERVICE</code>) and remove it. Operational <code>AVAILABLE</code>↔<code>OCCUPIED</code> is <strong>CASHIER</strong> via Board / <code>POST /api/tables/:id/operational-status</code>.</p>
+<div class="page-head">
+	<p class="kicker">Administration</p>
+	<h1>Tables</h1>
+	<p class="sub">Create tables and manage maintenance. Operational <code>AVAILABLE</code> ↔ <code>OCCUPIED</code> is cashier via Board.</p>
+</div>
 
-{#if err}<div style="color:#b00020;background:#fdecea;padding:0.5rem;">{err}</div>{/if}
-{#if msg}<div style="color:#0a0;background:#e7f5e7;padding:0.5rem;">{msg}</div>{/if}
+{#if err}<div class="alert alert-error">{err}</div>{/if}
+{#if msg}<div class="alert alert-ok">{msg}</div>{/if}
 
-<form onsubmit={(e)=>{e.preventDefault(); create();}} style="display:flex;gap:0.5rem;margin:1rem 0;">
-	<input bind:value={newName} placeholder="Table name (e.g. Table 9)" required style="padding:0.4rem;" />
-	<input bind:value={newDesc} placeholder="Description" style="padding:0.4rem;" />
-	<button type="submit">Create</button>
-</form>
+<div class="panel">
+	<form onsubmit={(e)=>{e.preventDefault(); create();}} class="form">
+		<input class="input" bind:value={newName} placeholder="Table name (e.g. Table 9)" required />
+		<input class="input" bind:value={newDesc} placeholder="Description" />
+		<button type="submit" class="btn btn-primary">Create table</button>
+	</form>
+</div>
 
-<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;">
-	<thead><tr><th>Name</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
-	<tbody>
-		{#each tables as t}
-			<tr>
-				<td>{t.name}</td>
-				<td>{t.description}</td>
-				<td>{t.status}</td>
-				<td>
-					{#if t.status === 'AVAILABLE'}<button onclick={()=>setStatus(t._id, 'MAINTENANCE')}>Set MAINTENANCE</button>{:else if t.status === 'MAINTENANCE' || t.status === 'OUT_OF_SERVICE'}<button onclick={()=>setStatus(t._id, 'AVAILABLE')}>Remove Maintenance (→ AVAILABLE)</button>{/if}
-					{#if t.status !== 'OUT_OF_SERVICE' && t.status !== 'MAINTENANCE'}<button onclick={()=>setStatus(t._id, 'OUT_OF_SERVICE')}>OUT_OF_SERVICE</button>{:else if t.status === 'OUT_OF_SERVICE'}<button onclick={()=>setStatus(t._id, 'MAINTENANCE')}>→ MAINTENANCE</button>{/if}
-					<button onclick={()=>del(t._id)} style="color:#b00020;">Delete</button>
-				</td>
-			</tr>
-		{/each}
-	</tbody>
-</table>
-<small>Seeded 8 tables. Deleting blocked if active session/reservation exists.</small>
+<div class="panel">
+	<div class="table-wrap">
+		<table class="table">
+			<thead><tr><th>Name</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+			<tbody>
+				{#each tables as t}
+					<tr>
+						<td class="mono">{t.name}</td>
+						<td class="muted">{t.description || '—'}</td>
+						<td><span class="badge" data-status={t.status}>{t.status}</span></td>
+						<td class="actions">
+							{#if t.status === 'AVAILABLE'}<button class="btn btn-ghost btn-sm" onclick={()=>setStatus(t._id, 'MAINTENANCE')}>Maintenance</button>{:else if t.status === 'MAINTENANCE' || t.status === 'OUT_OF_SERVICE'}<button class="btn btn-ghost btn-sm" onclick={()=>setStatus(t._id, 'AVAILABLE')}>Available</button>{/if}
+							{#if t.status !== 'OUT_OF_SERVICE' && t.status !== 'MAINTENANCE'}<button class="btn btn-ghost btn-sm" onclick={()=>setStatus(t._id, 'OUT_OF_SERVICE')}>Out of service</button>{:else if t.status === 'OUT_OF_SERVICE'}<button class="btn btn-ghost btn-sm" onclick={()=>setStatus(t._id, 'MAINTENANCE')}>Maintenance</button>{/if}
+							<button class="btn btn-danger btn-sm" onclick={()=>del(t._id)}>Delete</button>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+	<p class="foot-note">Seeded 8 tables. Deleting blocked if active session or reservation exists.</p>
+</div>
+
+<style>
+	.page-head { margin-bottom: 20px; }
+	.kicker { margin: 0 0 6px; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+	h1 { margin: 0; font-size: 1.7rem; letter-spacing: -0.03em; line-height: 1; font-weight: 700; }
+	.sub { margin: 8px 0 0; color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; max-width: 60ch; }
+	.sub code { background: var(--surface-2); border: 1px solid var(--border); padding: 1px 5px; border-radius: 6px; font-size: 0.78rem; font-family: ui-monospace, monospace; }
+	.alert { padding: 10px 12px; border-radius: var(--radius-sm); font-size: 0.88rem; margin: 12px 0; }
+	.alert-error { background: var(--danger-soft); border: 1px solid rgba(215,0,21,0.18); color: var(--danger); }
+	.alert-ok { background: var(--success-soft); border: 1px solid rgba(29,129,39,0.18); color: var(--success); }
+	:global([data-theme='dark']) .alert-ok { color: #30d158; }
+	.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-top: 16px; }
+	.form { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+	.input {
+		flex: 1 1 200px;
+		background: var(--surface);
+		color: var(--text);
+		border: 1px solid var(--border-strong);
+		border-radius: var(--radius-sm);
+		padding: 10px 12px;
+		font-size: 0.92rem;
+		outline: none;
+		transition: border-color 160ms ease, box-shadow 160ms ease;
+	}
+	.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+	.table-wrap { overflow-x: auto; }
+	.table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+	.table th {
+		text-align: left;
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		font-weight: 700;
+		padding: 8px 10px;
+		border-bottom: 1px solid var(--border);
+		white-space: nowrap;
+	}
+	.table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+	.mono { font-weight: 600; letter-spacing: -0.01em; }
+	.muted { color: var(--text-muted); }
+	.badge {
+		font-size: 0.68rem;
+		font-weight: 750;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		padding: 3px 7px;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+		background: var(--surface-2);
+		color: var(--text-muted);
+		white-space: nowrap;
+	}
+	.badge[data-status='AVAILABLE'] { background: var(--success-soft); color: var(--success); border-color: rgba(29,129,39,0.18); }
+	:global([data-theme='dark']) .badge[data-status='AVAILABLE'] { color: #30d158; }
+	.actions { display: flex; gap: 6px; flex-wrap: wrap; }
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 8px 12px;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		color: var(--text);
+		font-weight: 600;
+		font-size: 0.82rem;
+		cursor: pointer;
+		transition: transform 100ms ease-out, background 160ms ease;
+	}
+	.btn:active { transform: scale(0.97); }
+	.btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+	:global([data-theme='dark']) .btn-primary { background: #fff; color: #000; border-color: #fff; }
+	.btn-ghost { background: var(--surface); }
+	.btn-ghost:hover { background: var(--surface-2); }
+	.btn-danger { background: var(--danger-soft); color: var(--danger); border-color: rgba(215,0,21,0.18); }
+	.btn-sm { padding: 6px 10px; font-size: 0.78rem; }
+	.foot-note { margin: 12px 0 0; font-size: 0.8rem; color: var(--text-muted); }
+	@media (prefers-reduced-motion: reduce) { .btn { transition: opacity 160ms ease !important; } }
+</style>

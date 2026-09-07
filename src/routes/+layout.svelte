@@ -36,72 +36,106 @@
 {@render children()}
 
 <style>
-	/* Theme tokens: light is default (stackinfolio: white + #eef4ff light-blue, slate, blue #0a66c2), dark is billiard premium */
+	/* ── Minimal Apple system ── single source of truth ── */
 	:global(:root) {
-		--bg: #ffffff;
+		--bg: #fbfbfd;
 		--surface: #ffffff;
-		--surface-2: #f0f7ff;
-		--text: #0f172a;
-		--text-muted: #64748b;
-		--text-faint: #94a3b8;
-		--border: #e2e8f0;
-		--border-strong: #cbd5e1;
-		--nav-bg: rgba(255, 255, 255, 0.82);
-		--felt-1: #1b7a4b;
-		--felt-2: #0e3d2d;
-		--wood: #3c2415;
-		--gold: #0a66c2;
-		--accent: #0a66c2;
-		--accent-soft: rgba(10, 102, 194, 0.08);
-		--toggle-track: rgba(15, 23, 42, 0.08);
-		--toggle-border: rgba(15, 23, 42, 0.12);
-		--toggle-thumb: #0f172a;
+		--surface-2: #f5f5f7;
+		--surface-hover: #e8e8ed;
+		--text: #1d1d1f;
+		--text-secondary: #424245;
+		--text-muted: #6e6e73;
+		--text-faint: #86868b;
+		--border: #e8e8ed;
+		--border-strong: #d2d2d7;
+		--nav-bg: rgba(251, 251, 253, 0.8);
+		--nav-border: rgba(0, 0, 0, 0.06);
+		--accent: #0071e3;
+		--accent-hover: #0077ed;
+		--accent-pressed: #006edb;
+		--accent-soft: rgba(0, 113, 227, 0.08);
+		--accent-soft-strong: rgba(0, 113, 227, 0.14);
+		--success: #1d8127;
+		--success-soft: rgba(29, 129, 39, 0.08);
+		--danger: #d70015;
+		--danger-soft: rgba(215, 0, 21, 0.08);
+		--warning: #9a6700;
+		--toggle-track: rgba(0, 0, 0, 0.08);
+		--toggle-border: rgba(0, 0, 0, 0.1);
+		--toggle-thumb: #1d1d1f;
 		--toggle-thumb-icon: #ffffff;
-		--banner-bg: #f0f7ff;
-		--banner-text: #0f172a;
+		--banner-bg: #f5f5f7;
+		--banner-text: #1d1d1f;
+		--radius-xs: 10px;
+		--radius-sm: 12px;
+		--radius-md: 16px;
+		--radius-lg: 20px;
+		--radius-xl: 24px;
+		--radius-pill: 999px;
+		--content-width: 1120px;
+		--content-pad: 24px;
+		--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+		--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+		--shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.08);
 		color-scheme: light;
 	}
 	:global([data-theme='dark']) {
-		--bg: #0a0a0a;
-		--surface: #141414;
-		--surface-2: #0f0f0f;
-		--text: #f5f1e8;
-		--text-muted: rgba(245, 241, 232, 0.72);
-		--text-faint: rgba(245, 241, 232, 0.52);
-		--border: rgba(245, 241, 232, 0.08);
-		--border-strong: rgba(245, 241, 232, 0.14);
-		--nav-bg: rgba(18, 18, 18, 0.62);
-		--felt-1: #1b7a4b;
-		--felt-2: #0e3d2d;
-		--accent: #2ad27a;
-		--accent-soft: rgba(42, 210, 122, 0.14);
-		--toggle-track: rgba(245, 241, 232, 0.14);
-		--toggle-border: rgba(245, 241, 232, 0.18);
-		--toggle-thumb: #f5f1e8;
-		--toggle-thumb-icon: #0a0a0a;
-		--banner-bg: #1a1a1a;
-		--banner-text: #f5f1e8;
+		--bg: #000000;
+		--surface: #1c1c1e;
+		--surface-2: #2c2c2e;
+		--surface-hover: #3a3a3c;
+		--text: #f5f5f7;
+		--text-secondary: #a1a1a6;
+		--text-muted: #86868b;
+		--text-faint: #6e6e73;
+		--border: #2c2c2e;
+		--border-strong: #38383a;
+		--nav-bg: rgba(28, 28, 30, 0.72);
+		--nav-border: rgba(255, 255, 255, 0.08);
+		--accent: #2997ff;
+		--accent-hover: #30a2ff;
+		--accent-pressed: #0077ed;
+		--accent-soft: rgba(41, 151, 255, 0.14);
+		--accent-soft-strong: rgba(41, 151, 255, 0.20);
+		--success: #30d158;
+		--success-soft: rgba(48, 209, 88, 0.14);
+		--danger: #ff453a;
+		--danger-soft: rgba(255, 69, 58, 0.12);
+		--warning: #ffd60a;
+		--toggle-track: rgba(255, 255, 255, 0.14);
+		--toggle-border: rgba(255, 255, 255, 0.16);
+		--toggle-thumb: #f5f5f7;
+		--toggle-thumb-icon: #000000;
+		--banner-bg: #1c1c1e;
+		--banner-text: #f5f5f7;
 		color-scheme: dark;
 	}
-	/* Eased theme transition — avoid abrupt jump, fade surfaces */
-	:global(html.theme-transition),
-	:global(html.theme-transition body),
-	:global(html.theme-transition .nav),
-	:global(html.theme-transition .panel),
-	:global(html.theme-transition .card),
-	:global(html.theme-transition .tcard) {
-		transition:
-			background-color 280ms ease,
-			color 280ms ease,
-			border-color 280ms ease,
-			backdrop-filter 280ms ease !important;
+	/* Base */
+	:global(html) {
+		font: 100%/1.5 system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+		font-optical-sizing: auto;
 	}
+	:global(*) { box-sizing: border-box; }
 	:global(body) {
+		margin: 0;
 		background: var(--bg);
 		color: var(--text);
 		transition:
 			background-color 280ms ease,
 			color 280ms ease;
+	}
+	:global(a) { color: inherit; }
+	:global(::selection) { background: var(--accent-soft-strong); }
+	/* Eased theme transition */
+	:global(html.theme-transition),
+	:global(html.theme-transition body) {
+		transition:
+			background-color 280ms ease,
+			color 280ms ease,
+			border-color 280ms ease !important;
 	}
 	@media (prefers-reduced-motion: reduce) {
 		:global(html.theme-transition),
@@ -109,46 +143,13 @@
 			transition: none !important;
 		}
 	}
-
-	/* Light mode: stackinfolio palette — white + #f0f7ff, slate, blue #0a66c2 */
-	:global([data-theme='light'] .card),
-	:global([data-theme='light'] .step),
-	:global([data-theme='light'] .info-card),
-	:global([data-theme='light'] .panel),
-	:global([data-theme='light'] .tcard) {
-		background: #ffffff !important;
-		border-color: #e2e8f0 !important;
-		color: #0f172a;
-		box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06) !important;
+	/* Focus */
+	:global(:focus-visible) {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
 	}
-	:global([data-theme='light'] .card-featured) {
-		background: #f0f7ff !important;
-		border-color: #bfdbfe !important;
-	}
-	:global([data-theme='light'] .card p),
-	:global([data-theme='light'] .step p),
-	:global([data-theme='light'] .info-card p) {
-		color: #475569 !important;
-	}
-	:global([data-theme='light'] .kicker) {
-		color: #0a66c2 !important;
-	}
-	:global([data-theme='light'] .section-head h2),
-	:global([data-theme='light'] .card h3),
-	:global([data-theme='light'] .step h3),
-	:global([data-theme='light'] .info-card h3) {
-		color: #0f172a !important;
-	}
-	:global([data-theme='light'] .rail) {
-		background: #f8fafc !important;
-		border-color: #e2e8f0 !important;
-	}
-	:global([data-theme='light'] .rail-copy h2),
-	:global([data-theme='light'] .rail-copy p) {
-		color: #0f172a !important;
-	}
-	:global([data-theme='light'] .footer) {
-		background: #ffffff !important;
-		border-color: #e2e8f0 !important;
+	/* Reduced transparency */
+	@media (prefers-reduced-transparency: reduce) {
+		:global(:root) { --nav-bg: var(--surface) !important; }
 	}
 </style>

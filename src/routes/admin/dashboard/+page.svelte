@@ -81,19 +81,18 @@
 	}
 	.kicker {
 		margin: 0 0 6px;
-		font-size: 0.76rem;
-		letter-spacing: 0.14em;
+		font-size: 0.68rem;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--accent);
-		font-weight: 750;
-		font-family: ui-monospace, monospace;
+		color: var(--text-muted);
+		font-weight: 700;
 	}
 	h1 {
 		margin: 0;
 		font-size: clamp(1.6rem, 3vw, 2.2rem);
 		letter-spacing: -0.03em;
 		line-height: 0.95;
-		font-weight: 860;
+		font-weight: 700;
 	}
 	.sub {
 		margin: 6px 0 0;
@@ -120,17 +119,17 @@
 		display: grid;
 		gap: 4px;
 		padding: 14px;
-		border-radius: 16px;
+		border-radius: var(--radius-md);
 		background: var(--surface);
 		border: 1px solid var(--border);
 		text-decoration: none;
 		color: inherit;
 		transition:
-			transform 180ms ease,
-			border-color 180ms ease;
+			transform 160ms ease,
+			border-color 160ms ease;
 	}
 	.qcard:hover {
-		transform: translateY(-2px);
+		transform: translateY(-1px);
 		border-color: var(--border-strong);
 	}
 	@media (prefers-reduced-motion: reduce) {
@@ -147,13 +146,10 @@
 		display: grid;
 		place-items: center;
 		border-radius: 10px;
-		background: var(--accent-soft);
-		border: 1px solid rgba(42, 210, 122, 0.18);
+		background: var(--surface-2);
+		border: 1px solid var(--border);
 		font-size: 0.9rem;
-	}
-	:global([data-theme='light']) .qicon {
-		background: rgba(10, 102, 194, 0.08);
-		border-color: rgba(10, 102, 194, 0.14);
+		color: var(--text-muted);
 	}
 	.qcard span:nth-child(2) {
 		font-weight: 700;
@@ -176,22 +172,22 @@
 	}
 	.stat {
 		padding: 16px;
-		border-radius: 16px;
+		border-radius: var(--radius-md);
 		background: var(--surface);
 		border: 1px solid var(--border);
 	}
 	.stat-kicker {
 		margin: 0 0 4px;
-		font-size: 0.7rem;
-		letter-spacing: 0.1em;
+		font-size: 0.68rem;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
-		font-family: ui-monospace, monospace;
+		font-weight: 700;
 	}
 	.stat-value {
 		margin: 0;
-		font-size: clamp(1.4rem, 3vw, 1.8rem);
-		font-weight: 850;
+		font-size: clamp(1.35rem, 3vw, 1.7rem);
+		font-weight: 700;
 		letter-spacing: -0.02em;
 		line-height: 1;
 	}
@@ -203,7 +199,7 @@
 	.panel {
 		background: var(--surface);
 		border: 1px solid var(--border);
-		border-radius: 18px;
+		border-radius: var(--radius-lg);
 		padding: 16px;
 		margin-top: 16px;
 	}
