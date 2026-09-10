@@ -126,7 +126,7 @@
 
 			<label class="field">
 				<span>Contact — 09…</span>
-				<input bind:value={customerContact} placeholder="09xxxxxxxxx" required pattern="(\+639|09)[0-9]{9}" />
+				<input bind:value={customerContact} placeholder="09xxxxxxxxx" required pattern={"(\\+639|09)[0-9]{9}"} />
 				<small>We’ll use this to find your booking</small>
 			</label>
 
