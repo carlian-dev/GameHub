@@ -12,6 +12,10 @@ export const cashierUpdateSchema = z.object({
 	password: z.string().min(6).max(100).optional()
 }).refine((o) => Object.keys(o).length > 0, { message: 'At least one field required' });
 
+export const linkGoogleSchema = z.object({
+	credential: z.string().trim().min(50).max(5000)
+});
+
 export const scheduleSchema = z.object({
 	dayOfWeek: z.number().int().min(0).max(6),
 	startTime: z.string().regex(/^\d{2}:\d{2}$/, 'HH:MM'),

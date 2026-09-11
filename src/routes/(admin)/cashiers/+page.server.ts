@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { getDb } from '$lib/server/db/mongo';
+import { env } from '$env/dynamic/private';
 
 export const load: PageServerLoad = async () => {
 	const db = await getDb();
@@ -10,7 +11,10 @@ export const load: PageServerLoad = async () => {
 			username: c.username,
 			displayName: c.displayName,
 			status: c.status,
+			email: (c as any).email ?? null,
+			googleId: (c as any).googleId ?? null,
 			createdAt: c.createdAt?.toISOString()
-		}))
+		})),
+		googleClientId: env.GOOGLE_CLIENT_ID ?? (env as any).PUBLIC_GOOGLE_CLIENT_ID ?? process.env.GOOGLE_CLIENT_ID ?? null
 	};
 };

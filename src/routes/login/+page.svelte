@@ -1,9 +1,78 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	let { data } = $props();
 	let username = $state('');
 	let password = $state('');
 	let error = $state<string | null>(null);
 	let loading = $state(false);
+	let googleLoading = $state(false);
 	let activeField: string | null = $state(null);
+
+	// svelte-ignore state_referenced_locally
+	let googleClientId: string | null = $state(data?.googleClientId ?? null);
+
+	async function handleGoogleCredential(credential: string) {
+		error = null;
+		googleLoading = true;
+		try {
+			const res = await fetch('/api/auth/google', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ credential })
+			});
+			const data = await res.json();
+			if (!res.ok) {
+				error = data?.error?.message ?? data?.error?.code ?? 'Google sign-in failed';
+				return;
+			}
+			const role = data.data.user.role as string;
+			if (role === 'ADMIN') window.location.href = '/dashboard';
+			else window.location.href = '/board';
+		} catch (err) {
+			error = (err as Error).message;
+		} finally {
+			googleLoading = false;
+		}
+	}
+
+	onMount(() => {
+		if (!googleClientId) return;
+		// Load GIS script
+		const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+		if (existing) {
+			initGoogle();
+			return;
+		}
+		const script = document.createElement('script');
+		script.src = 'https://accounts.google.com/gsi/client';
+		script.async = true;
+		script.defer = true;
+		script.onload = initGoogle;
+		document.head.appendChild(script);
+
+		function initGoogle() {
+			const g = (window as any).google;
+			if (!g?.accounts?.id) return;
+			g.accounts.id.initialize({
+				client_id: googleClientId,
+				callback: (resp: any) => {
+					if (resp?.credential) handleGoogleCredential(resp.credential);
+				},
+				auto_select: false,
+				cancel_on_tap_outside: true
+			});
+			const btnParent = document.getElementById('google-btn');
+			if (btnParent) {
+				g.accounts.id.renderButton(btnParent, {
+					theme: document.documentElement.dataset.theme === 'dark' ? 'filled_black' : 'outline',
+					size: 'large',
+					width: btnParent.offsetWidth,
+					text: 'continue_with',
+					shape: 'pill'
+				});
+			}
+		}
+	});
 
 	async function submit(e: SubmitEvent) {
 		e.preventDefault();
@@ -118,6 +187,16 @@
 						<span aria-hidden="true" class="btn-arrow">→</span>
 					{/if}
 				</button>
+
+				{#if googleClientId}
+					<div class="divider" role="separator"><span>or</span></div>
+					<div id="google-btn" class="google-btn-wrap">
+						<div id="google-btn"></div>
+					</div>
+					{#if googleLoading}
+						<p class="google-loading" aria-live="polite">Verifying Google…</p>
+					{/if}
+				{/if}
 
 				<p class="form-foot">Press <kbd>Enter</kbd> to submit · Guests: <a href="/reserve">Reserve →</a></p>
 			</form>
@@ -463,4 +542,43 @@
 	.foot a { color: var(--text-muted); text-underline-offset: 3px; }
 	.foot a:hover { color: var(--text); }
 	.foot-dot { opacity: 0.4; }
+
+	.divider {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		margin: 2px 0;
+	}
+	.divider::before,
+	.divider::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: var(--border);
+	}
+	.divider span {
+		padding: 0 4px;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-size: 0.7rem;
+		font-weight: 700;
+	}
+	.google-btn-wrap {
+		display: grid;
+		place-items: center;
+		min-height: 44px;
+	}
+	#google-btn {
+		width: 100%;
+		display: grid;
+		place-items: center;
+	}
+	.google-loading {
+		font-size: 0.82rem;
+		color: var(--text-muted);
+		text-align: center;
+		margin: 4px 0 0;
+	}
 </style>

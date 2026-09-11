@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	let { data } = $props();
 	// svelte-ignore state_referenced_locally
 	let cashiers = $state(data.cashiers);
@@ -7,6 +8,76 @@
 	let displayName = $state('');
 	let err = $state('');
 	let msg = $state('');
+	let pendingLinkId: string | null = $state(null);
+	let linking = $state(false);
+
+	onMount(() => {
+		const clientId = (data as any)?.googleClientId;
+		if (!clientId) return;
+		const init = () => {
+			const g = (window as any).google;
+			if (!g?.accounts?.id) return;
+			g.accounts.id.initialize({
+				client_id: clientId,
+				callback: async (resp: any) => {
+					const credential = resp?.credential;
+					const targetId = pendingLinkId;
+					pendingLinkId = null;
+					if (!credential || !targetId) return;
+					err = ''; msg = '';
+					linking = true;
+					try {
+						const res = await fetch(`/api/admin/users/${targetId}/link-google`, {
+							method: 'PATCH',
+							headers: { 'Content-Type': 'application/json' },
+							body: JSON.stringify({ credential })
+						});
+						const j = await res.json();
+						if (!res.ok) {
+							err = j.error?.message ?? j.error?.code ?? 'Link failed';
+							if (j.error?.details) err += ' ' + JSON.stringify(j.error.details);
+							return;
+						}
+						msg = 'Google linked';
+						location.reload();
+					} catch (e) {
+						err = (e as Error).message;
+					} finally {
+						linking = false;
+					}
+				},
+				auto_select: false,
+				cancel_on_tap_outside: true
+			});
+		};
+		const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement | null;
+		if (existing) {
+			if ((window as any).google?.accounts?.id) init();
+			else existing.addEventListener('load', init);
+			return;
+		}
+		const s = document.createElement('script');
+		s.src = 'https://accounts.google.com/gsi/client';
+		s.async = true;
+		s.defer = true;
+		s.onload = init;
+		document.head.appendChild(s);
+	});
+
+	function triggerGoogleLink(id: string) {
+		pendingLinkId = id;
+		err = ''; msg = '';
+		const g = (window as any).google;
+		if (!g?.accounts?.id) {
+			err = 'Google Sign-In not ready. Please wait and try again.';
+			return;
+		}
+		g.accounts.id.prompt((notification: any) => {
+			if (notification?.isNotDisplayed?.() || notification?.isSkippedMoment?.()) {
+				err = 'Google prompt not displayed. Ensure popups are allowed and try again. Alternatively, have the staff sign in on this device first.';
+			}
+		});
+	}
 
 	async function create() {
 		err = '';
@@ -54,6 +125,23 @@
 		}
 		msg = 'Password reset';
 	}
+
+	function linkGoogle(id: string) {
+		triggerGoogleLink(id);
+	}
+
+	async function unlinkGoogle(id: string) {
+		if (!confirm('Unlink Google account? Staff will no longer be able to use Google Sign-In.')) return;
+		err = ''; msg = '';
+		const res = await fetch(`/api/admin/users/${id}/link-google`, { method: 'DELETE' });
+		const j = await res.json();
+		if (!res.ok) {
+			err = j.error?.message ?? 'Unlink failed';
+			return;
+		}
+		msg = 'Google unlinked';
+		location.reload();
+	}
 </script>
 
 <div class="page-head">
@@ -74,19 +162,32 @@
 	</form>
 </div>
 
-<div class="panel">
+	<div class="panel">
 	<div class="table-wrap">
 		<table class="table">
-			<thead><tr><th>Username</th><th>Display</th><th>Status</th><th>Actions</th></tr></thead>
+			<thead><tr><th>Username</th><th>Display</th><th>Status</th><th>Google</th><th>Actions</th></tr></thead>
 			<tbody>
 				{#each cashiers as c}
 					<tr>
 						<td class="mono">{c.username}</td>
 						<td>{c.displayName}</td>
 						<td><span class="badge" data-status={c.status}>{c.status}</span></td>
+						<td>
+							{#if (c as any).googleId}
+								<span class="badge" data-available="true">Linked</span>
+								<small class="muted" style="margin-left:6px">{(c as any).email ?? (c as any).googleId.slice(0,8)+'…'}</small>
+							{:else}
+								<span class="badge">Not linked</span>
+							{/if}
+						</td>
 						<td class="actions">
 							{#if c.status === 'ACTIVE'}<button class="btn btn-ghost btn-sm" onclick={()=>setStatus(c._id, 'DISABLED')}>Disable</button>{:else}<button class="btn btn-ghost btn-sm" onclick={()=>setStatus(c._id, 'ACTIVE')}>Enable</button>{/if}
 							<button class="btn btn-ghost btn-sm" onclick={()=>resetPw(c._id)}>Reset password</button>
+							{#if (c as any).googleId}
+								<button class="btn btn-ghost btn-sm" onclick={()=>unlinkGoogle(c._id)}>Unlink Google</button>
+							{:else}
+								<button class="btn btn-ghost btn-sm" onclick={()=>linkGoogle(c._id)}>Link Google</button>
+							{/if}
 						</td>
 					</tr>
 				{/each}
@@ -126,6 +227,8 @@
 	.badge { font-size: 0.68rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 7px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-muted); }
 	.badge[data-status='ACTIVE'] { background: var(--success-soft); color: var(--success); border-color: rgba(29,129,39,0.18); }
 	:global([data-theme='dark']) .badge[data-status='ACTIVE'] { color: #30d158; }
+	.badge[data-available='true'] { background: var(--success-soft); color: var(--success); border-color: rgba(29,129,39,0.18); }
+	:global([data-theme='dark']) .badge[data-available='true'] { color: #30d158; }
 	.actions { display: flex; gap: 6px; flex-wrap: wrap; }
 	.btn { display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: transform 100ms ease-out, background 160ms ease; }
 	.btn:active { transform: scale(0.97); }
